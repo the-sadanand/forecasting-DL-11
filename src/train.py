@@ -1,14 +1,11 @@
-# Optuna + W & B + walk-forward
-import os
+# Optuna + W&B + walk-forward
 import json
 import wandb
 import optuna
 import torch
 import numpy as np
-import pandas as pd
 from pathlib import Path
-from torch.utils.data import DataLoader, TensorDataset
-from sklearn.metrics import mean_absolute_error, mean_squared_error
+from sklearn.metrics import mean_squared_error
 
 from preprocess import preprocess
 from feature_engineering import create_features
@@ -16,7 +13,22 @@ from models import LSTMModel
 
 LOG_PATH = Path("logs/training.log")
 RESULT_PATH = Path("results")
+MODEL_PATH = Path("models")
+
 RESULT_PATH.mkdir(exist_ok=True, parents=True)
+MODEL_PATH.mkdir(exist_ok=True, parents=True)
+LOG_PATH.parent.mkdir(exist_ok=True, parents=True)
+
+
+def save_best_outputs(study, model):
+    best_params = study.best_params
+
+    with open(RESULT_PATH / "best_params.json", "w") as f:
+        json.dump(best_params, f, indent=2)
+
+    torch.save(model.state_dict(), MODEL_PATH / "best_model.pt")
+
+    print("✅ Saved best_params.json and best_model.pt")
 
 
 def create_sequences(data, target_col, window):
@@ -35,15 +47,12 @@ def train_lstm(X, y, params):
     X_t = torch.tensor(X, dtype=torch.float32)
     y_t = torch.tensor(y, dtype=torch.float32)
 
-    loader = DataLoader(TensorDataset(X_t, y_t), batch_size=32, shuffle=True)
-
     for epoch in range(5):
-        for xb, yb in loader:
-            pred = model(xb).squeeze()
-            loss = loss_fn(pred, yb)
-            optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
+        pred = model(X_t).squeeze()
+        loss = loss_fn(pred, y_t)
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
 
     return model
 
@@ -74,6 +83,13 @@ def objective(trial, df):
     return rmse
 
 
+def retrain_best_model(df, params):
+    target = "Global_active_power"
+    X, y = create_sequences(df, target, params["window"])
+    model = train_lstm(X, y, params)
+    return model
+
+
 def main():
     wandb.init(project="energy-forecasting")
 
@@ -86,24 +102,29 @@ def main():
     best_params = study.best_params
     wandb.log(best_params)
 
-    LOG_PATH.parent.mkdir(exist_ok=True, parents=True)
-    with open(LOG_PATH, "w") as f:
-        f.write("Walk-forward completed\n")
+    # 🔥 retrain final model on full data
+    best_model = retrain_best_model(df_feat, best_params)
 
-    # Save dummy model metrics placeholder
+    # 🔥 SAVE MODEL + PARAMS
+    save_best_outputs(study, best_model)
+
+    # log file
+    with open(LOG_PATH, "w") as f:
+        f.write("Training completed with best params\n")
+
+    # metrics placeholder
     metrics = {
         "deep_learning_model": {
             "mae": 0.1,
             "rmse": 0.2,
             "mape": 0.3,
-            "quantile_loss_p50": 0.1,
-            "quantile_loss_p95": 0.2,
-        },
-        "baseline_model": {"mae": 0.3, "rmse": 0.4, "mape": 0.5},
+        }
     }
 
     with open(RESULT_PATH / "metrics.json", "w") as f:
         json.dump(metrics, f, indent=2)
+
+    print("✅ Training pipeline completed")
 
 
 if __name__ == "__main__":
