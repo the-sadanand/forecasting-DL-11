@@ -22,7 +22,7 @@ def preprocess():
     df = df.apply(pd.to_numeric, errors="coerce")
 
     # hourly resample
-    df = df.resample("H").mean()
+    df = df.resample("h").mean()
 
     df = df.fillna(method="ffill")
 
