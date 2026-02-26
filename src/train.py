@@ -4,8 +4,10 @@ import wandb
 import optuna
 import torch
 import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
 from pathlib import Path
-from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_squared_error, mean_absolute_error, mean_absolute_percentage_error
 import sys
 # add src to python path
 sys.path.append(str(Path(__file__).resolve().parent))
@@ -92,6 +94,70 @@ def retrain_best_model(df, params):
     return model
 
 
+def generate_forecasts(model, df, target_col, window, split_ratio=0.8):
+    """Generate forecasts and return predictions with actuals"""
+    X, y = create_sequences(df, target_col, window)
+    
+    split = int(len(X) * split_ratio)
+    X_test = X[split:]
+    y_test = y[split:]
+    
+    # Get predictions
+    model.eval()
+    with torch.no_grad():
+        X_test_t = torch.tensor(X_test, dtype=torch.float32)
+        predictions = model(X_test_t).squeeze().numpy()
+    
+    # Create forecasts dataframe
+    forecast_df = pd.DataFrame({
+        'actual': y_test,
+        'predicted': predictions,
+        'error': y_test - predictions,
+        'abs_error': np.abs(y_test - predictions)
+    })
+    
+    return forecast_df
+
+
+def create_visualization(forecast_df, output_path):
+    """Create forecast vs actual visualization"""
+    fig, axes = plt.subplots(2, 1, figsize=(14, 8))
+    
+    # Plot 1: Forecast vs Actual
+    axes[0].plot(forecast_df.index, forecast_df['actual'], label='Actual', color='blue', linewidth=2)
+    axes[0].plot(forecast_df.index, forecast_df['predicted'], label='Predicted', color='red', linewidth=2, alpha=0.7)
+    axes[0].set_xlabel('Time Index')
+    axes[0].set_ylabel('Global Active Power (Normalized)')
+    axes[0].set_title('Energy Consumption: Forecast vs Actual')
+    axes[0].legend()
+    axes[0].grid(True, alpha=0.3)
+    
+    # Plot 2: Prediction Error
+    axes[1].plot(forecast_df.index, forecast_df['error'], label='Error', color='green', linewidth=1)
+    axes[1].axhline(y=0, color='black', linestyle='--', linewidth=1)
+    axes[1].fill_between(forecast_df.index, forecast_df['error'], 0, alpha=0.3, color='green')
+    axes[1].set_xlabel('Time Index')
+    axes[1].set_ylabel('Prediction Error')
+    axes[1].set_title('Forecast Error Over Time')
+    axes[1].legend()
+    axes[1].grid(True, alpha=0.3)
+    
+    plt.tight_layout()
+    plt.savefig(output_path, dpi=100, bbox_inches='tight')
+    plt.close()
+    
+    print(f"✅ Saved visualization to {output_path}")
+
+
+def calculate_metrics(forecast_df):
+    """Calculate performance metrics"""
+    mae = mean_absolute_error(forecast_df['actual'], forecast_df['predicted'])
+    rmse = np.sqrt(mean_squared_error(forecast_df['actual'], forecast_df['predicted']))
+    mape = mean_absolute_percentage_error(forecast_df['actual'], forecast_df['predicted'])
+    
+    return {'mae': round(mae, 6), 'rmse': round(rmse, 6), 'mape': round(mape, 6)}
+
+
 def main():
     wandb.init(project="energy-forecasting")
 
@@ -110,23 +176,40 @@ def main():
     # 🔥 SAVE MODEL + PARAMS
     save_best_outputs(study, best_model)
 
+    # Generate forecasts
+    target = "Global_active_power"
+    forecast_df = generate_forecasts(best_model, df_feat, target, best_params["window"])
+    
+    # Save forecasts to CSV
+    forecast_csv_path = RESULT_PATH / "forecasts.csv"
+    forecast_df.to_csv(forecast_csv_path)
+    print(f"✅ Saved forecasts to {forecast_csv_path}")
+    
+    # Create visualization
+    viz_path = RESULT_PATH / "forecast_visualization.png"
+    create_visualization(forecast_df, viz_path)
+    
+    # Calculate real metrics
+    metrics_dict = calculate_metrics(forecast_df)
+    
     # log file
     with open(LOG_PATH, "w") as f:
         f.write("Training completed with best params\n")
+        f.write(f"Best params: {json.dumps(best_params, indent=2)}\n")
+        f.write(f"Metrics: {json.dumps(metrics_dict, indent=2)}\n")
 
-    # metrics placeholder
+    # Save metrics with real values
     metrics = {
-        "deep_learning_model": {
-            "mae": 0.1,
-            "rmse": 0.2,
-            "mape": 0.3,
-        }
+        "deep_learning_model": metrics_dict,
+        "best_params": best_params,
+        "optimization_trials": 10
     }
 
     with open(RESULT_PATH / "metrics.json", "w") as f:
         json.dump(metrics, f, indent=2)
 
     print("✅ Training pipeline completed")
+    print(f"📊 Metrics - MAE: {metrics_dict['mae']}, RMSE: {metrics_dict['rmse']}, MAPE: {metrics_dict['mape']}")
 
 
 if __name__ == "__main__":
