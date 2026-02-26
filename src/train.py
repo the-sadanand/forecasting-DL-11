@@ -6,7 +6,9 @@ import torch
 import numpy as np
 from pathlib import Path
 from sklearn.metrics import mean_squared_error
-
+import sys
+# add src to python path
+sys.path.append(str(Path(__file__).resolve().parent))
 from preprocess import preprocess
 from feature_engineering import create_features
 from models import LSTMModel
