@@ -24,7 +24,7 @@ def preprocess():
     # hourly resample
     df = df.resample("h").mean()
 
-    df = df.fillna(method="ffill")
+    df = df.ffill()
 
     scaler = StandardScaler()
     df[df.columns] = scaler.fit_transform(df)
