@@ -10,4 +10,6 @@ prophet==1.1.5
 optuna==3.6.1
 wandb==0.17.6
 
+plotly==5.18.0
+
 python-dotenv==1.0.1
