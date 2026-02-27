@@ -493,11 +493,6 @@ Created as an advanced machine learning forecasting solution.
 
 ---
 
-## 📞 Support
-
-- 📧 Email: support@example.com
-- 🐛 Bug Reports: [GitHub Issues](/)
-- 💬 Discussions: [GitHub Discussions](/)
 
 ---
 
