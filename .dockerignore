@@ -1,0 +1,145 @@
+# ============================================================================
+# Production-Grade Docker Ignore Rules
+# Reduces build context and speeds up image builds
+# ============================================================================
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environment
+.pyenv/
+.virtualenvs/
+
+# IDEs & Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+.sublime-project
+.sublime-workspace
+*.iml
+*.iws
+*.ipr
+.project
+.pydevproject
+.settings/
+*.sublime-settings
+
+# Git
+.git/
+.gitignore
+.gitattributes
+.github/
+.gitmodules
+
+# Development
+notebooks/
+tests/
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Documentation
+docs/
+*.md
+README
+LICENSE
+CHANGELOG
+
+# Build & CI/CD
+.circleci/
+.gitlab-ci.yml
+.travis.yml
+Jenkinsfile
+Makefile
+tox.ini
+.env
+.env.local
+.env.*.local
+
+# OS
+.DS_Store
+Thumbs.db
+*.log
+*.pot
+.directory
+
+# Cache
+.cache/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Results & Logs (optional - include if you want fresh builds)
+# Uncomment below if you want to exclude these from builds
+# results/
+# logs/
+# models/
+
+# Data (optional - for large datasets)
+# Uncomment below if you want to handle data separately
+# data/raw/*.zip
+# data/raw/*.csv
+
+# Temporary
+*.tmp
+*.temp
+.temporary/
+tmp/
+temp/
+
+# Docker
+docker-compose*.yml
+Dockerfile*
+.dockerignore
+
+# Configuration
+*.conf
+*.ini
+config/local*
+
+# Node (if any frontend)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Archive files
+*.tar
+*.tar.gz
+*.zip
+*.rar
+*.7z
+
+# Lock files (use specific versions instead)
+# Uncomment if you want to rebuild dependencies each time
+# poetry.lock
+# Pipfile.lock

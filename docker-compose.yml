@@ -1,0 +1,23 @@
+services:
+  app:
+    build: .
+    image: energy-forecasting:latest
+    container_name: energy-forecasting-app
+    
+    # Load environment variables from .env file
+    env_file: .env
+    
+    # Environment (can override .env)
+    environment:
+      PYTHONUNBUFFERED: 1
+      WANDB_DISABLED: "true"
+    
+    volumes:
+      - ./data:/app/data
+      - ./results:/app/results
+      - ./logs:/app/logs
+      - ./models:/app/models
+    
+    # Keep container running for debugging
+    stdin_open: true
+    tty: true

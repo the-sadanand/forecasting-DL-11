@@ -1,0 +1,8 @@
+.venv
+venv
+.env
+.git
+.venv-1
+wandb
+*.md
+!README.md

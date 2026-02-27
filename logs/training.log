@@ -1,0 +1,30 @@
+
+TRAINING COMPLETED: 2026-02-27 13:05:09.946861
+============================================================
+
+LSTM MODEL METRICS:
+  MAE:  0.376418
+  RMSE: 0.542692
+  MAPE: 1.928559
+
+WALK-FORWARD VALIDATION RESULTS:
+  Average MAE:  0.600330
+  Average RMSE: 0.789153
+  Average MAPE: 3.660813
+
+BEST HYPERPARAMETERS:
+{
+  "window": 32,
+  "hidden": 35,
+  "layers": 1,
+  "dropout": 0.18004658727258552,
+  "lr": 0.003537088494044164
+}
+
+FILES GENERATED:
+  - forecasts.csv
+  - forecast_visualization.png
+  - model_comparison.png
+  - best_params.json
+  - best_model.pt
+  - metrics.json

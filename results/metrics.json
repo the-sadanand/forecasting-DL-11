@@ -1,0 +1,22 @@
+{
+  "lstm_model": {
+    "mae": 0.376418,
+    "rmse": 0.542692,
+    "mape": 1.928559
+  },
+  "walk_forward_validation": {
+    "average_mae": 0.6003301474252093,
+    "average_rmse": 0.7891525436250624,
+    "average_mape": 3.6608130240653556,
+    "num_folds": 3
+  },
+  "best_params": {
+    "window": 32,
+    "hidden": 35,
+    "layers": 1,
+    "dropout": 0.18004658727258552,
+    "lr": 0.003537088494044164
+  },
+  "optimization_trials": 5,
+  "timestamp": "2026-02-27T13:05:09.950791"
+}

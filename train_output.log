@@ -1,0 +1,23 @@
+Traceback (most recent call last):
+  File "D:\forecasting-with-deepLearning\src\train.py", line 548, in <module>
+    print("\U0001f680 Starting Energy Forecasting Pipeline...")
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\thesa\anaconda3\Lib\site-packages\wandb\sdk\lib\console_capture.py", line 183, in write_with_callbacks
+    n = orig_write(s)
+  File "C:\Users\thesa\anaconda3\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\U0001f680' in position 0: character maps to <undefined>
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\forecasting-with-deepLearning\src\train.py", line 557, in <module>
+    print(f"\u274c VALUE ERROR: {e}")
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\thesa\anaconda3\Lib\site-packages\wandb\sdk\lib\console_capture.py", line 183, in write_with_callbacks
+    n = orig_write(s)
+  File "C:\Users\thesa\anaconda3\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\u274c' in position 0: character maps to <undefined>
