@@ -1,0 +1,26 @@
+# Auto normalize line endings
+* text=auto
+
+# Explicitly set line endings for specific files
+*.py text eol=lf
+*.sh text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.csv text eol=lf
+*.log text eol=lf
+
+# Binary files (don't convert)
+*.pt binary
+*.pkl binary
+*.zip binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+
+# Windows-specific
+*.ps1 text eol=crlf
+*.bat text eol=crlf
+*.cmd text eol=crlf
