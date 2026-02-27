@@ -67,7 +67,7 @@ This project implements a comprehensive machine learning pipeline for forecastin
 #### Option 1: Local Setup
 ```bash
 # Clone repository
-git clone <repo-url>
+git clone https://github.com/the-sadanand/forecasting-DL-11.git
 cd forecasting-with-deepLearning
 
 # Create virtual environment
